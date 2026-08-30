@@ -2,6 +2,9 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
+#include <memory>
+#include "CrossWord/WordTree.h"
 
 namespace CrossWord
 {
@@ -16,9 +19,19 @@ namespace CrossWord
 		WordBank();
 		virtual ~WordBank();
 
+		void Clear();
 		bool Load(const std::string& filePath);
+		bool IsWord(const std::string& word) const;
 
 	private:
-		std::vector<std::string> wordArray;
+		struct Bucket
+		{
+			WordTree wordTree;
+			int wordLength;
+		};
+
+		WordTree wordTree;
+
+		std::unordered_map<int, std::shared_ptr<Bucket>> bucketMap;
 	};
 }

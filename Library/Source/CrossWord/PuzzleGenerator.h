@@ -6,6 +6,7 @@ namespace CrossWord
 {
 	class WordBank;
 	class PuzzleMatrix;
+	class Random;
 
 	/**
 	 * These can generate valid crossword puzzle matrices.  The plan is
@@ -27,6 +28,6 @@ namespace CrossWord
 		PuzzleGenerator();
 		virtual ~PuzzleGenerator();
 
-		bool Generate(PuzzleMatrix* puzzleMatrix, WordBank* workBank);
+		bool Generate(PuzzleMatrix* puzzleMatrix, WordBank* workBank, Random* random, int minWordLength, int maxWordLength, bool symmetric);
 	};
 }
