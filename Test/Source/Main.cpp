@@ -15,18 +15,19 @@ int main(int argc, char** argv)
 		return 1;
 
 	CrossWord::PuzzleMatrix puzzleMatrix;
-	puzzleMatrix.SetSize(16, 16);
+	puzzleMatrix.SetSize(20, 20);
 
 	CrossWord::PuzzleGenerator puzzleGenerator;
 	CrossWord::Random random;
 
+	//random.SetSeed(4321);		// <-- STPTODO: This doesn't terminate in a reasonable amount of time.  How fix?
 	random.SetSeed(123);
 
 	std::cout << "Generating puzzle...\n";
 
 	std::vector<CrossWord::WordLocation> wordLocationArray;
 
-	if (!puzzleGenerator.Generate(&puzzleMatrix, &wordBank, &random, 3, 6, true, wordLocationArray))
+	if (!puzzleGenerator.Generate(&puzzleMatrix, &wordBank, &random, 3, 9, true, wordLocationArray))
 		return 1;
 
 	std::cout << puzzleMatrix.Print() << "\n";
