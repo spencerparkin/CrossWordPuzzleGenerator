@@ -1,11 +1,18 @@
 #pragma once
 
 #include <string>
+#include <stdio.h>
+#include "CrossWord/PuzzleMatrix.h"
+
+#ifdef CROSSWORD_ENABLE_LOG
+#define CROSSWORD_LOG			printf
+#else
+#define CROSSWORD_LOG
+#endif
 
 namespace CrossWord
 {
 	class WordBank;
-	class PuzzleMatrix;
 	class Random;
 
 	/**
@@ -28,6 +35,10 @@ namespace CrossWord
 		PuzzleGenerator();
 		virtual ~PuzzleGenerator();
 
-		bool Generate(PuzzleMatrix* puzzleMatrix, WordBank* workBank, Random* random, int minWordLength, int maxWordLength, bool symmetric);
+		bool Generate(PuzzleMatrix* puzzleMatrix, WordBank* wordBank, Random* random, int minWordLength, int maxWordLength, bool symmetric, std::vector<WordLocation>& wordLocationArray);
+
+	private:
+
+		bool FitWords(PuzzleMatrix* puzzleMatrix, WordBank* wordBank, Random* random, const std::vector<WordLocation>& wordLocationArray);
 	};
 }

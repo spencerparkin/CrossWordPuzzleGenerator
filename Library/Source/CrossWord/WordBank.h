@@ -22,12 +22,14 @@ namespace CrossWord
 		void Clear();
 		bool Load(const std::string& filePath);
 		bool IsWord(const std::string& word) const;
+		const std::vector<std::string>* GetAllWordsOfLength(int length) const;
 
 	private:
 		struct Bucket
 		{
 			WordTree wordTree;
 			int wordLength;
+			std::vector<std::string> wordArray;
 		};
 
 		WordTree wordTree;

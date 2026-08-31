@@ -3,6 +3,7 @@
 #include "CrossWord/WordBank.h"
 #include "CrossWord/Random.h"
 #include <iostream>
+#include <assert.h>
 
 int main(int argc, char** argv)
 {
@@ -23,12 +24,22 @@ int main(int argc, char** argv)
 
 	std::cout << "Generating puzzle...\n";
 
-	if (!puzzleGenerator.Generate(&puzzleMatrix, &wordBank, &random, 3, 6, true))
+	std::vector<CrossWord::WordLocation> wordLocationArray;
+
+	if (!puzzleGenerator.Generate(&puzzleMatrix, &wordBank, &random, 3, 6, true, wordLocationArray))
 		return 1;
 
-	std::string puzzleStr = puzzleMatrix.Print();
+	std::cout << puzzleMatrix.Print() << "\n";
 
-	std::cout << puzzleStr;
+	for (const CrossWord::WordLocation& wordLocation : wordLocationArray)
+	{
+		std::string word = puzzleMatrix.GetWordAt(wordLocation);
+		std::cout << "(" << wordLocation.location.row << ", " << wordLocation.location.col << ") ";
+		std::cout << ((wordLocation.orientation == CrossWord::WordOrientation::ACROSS) ? "across" : "down");
+		std::cout << " - " << word << "\n";
+
+		assert(wordBank.IsWord(word));
+	}
 
 	return 0;
 }

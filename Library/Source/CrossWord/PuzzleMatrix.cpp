@@ -197,3 +197,35 @@ bool PuzzleMatrix::HasHole() const
 
 	return false;
 }
+
+std::string PuzzleMatrix::GetWordAt(const WordLocation& wordLocation) const
+{
+	std::string word;
+
+	for (int i = 0; i < wordLocation.length; i++)
+		word += this->GetLetter(wordLocation.GetLocationAt(i));
+
+	return word;
+}
+
+Location WordLocation::GetLocationAt(int i) const
+{
+	assert(0 <= i && i < this->length);
+
+	Location letterLocation = this->location;
+
+	switch (this->orientation)
+	{
+	case WordOrientation::ACROSS:
+		letterLocation.col += i;
+		break;
+	case WordOrientation::DOWN:
+		letterLocation.row += i;
+		break;
+	default:
+		assert(false);
+		break;
+	}
+
+	return letterLocation;
+}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <random>
+#include <vector>
 
 namespace CrossWord
 {
@@ -13,6 +14,7 @@ namespace CrossWord
 		void SetSeed(int seed);
 		void SetSeedUsingTime();
 		int InRange(int min, int max);
+		void MakeRandomPermutation(std::vector<int>& permutation, int size);
 
 		template<typename T>
 		void Shuffle(T* givenArray, uint32_t givenArraySize)

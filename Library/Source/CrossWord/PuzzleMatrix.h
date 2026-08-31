@@ -24,6 +24,8 @@ namespace CrossWord
 		Location location;
 		int length;
 		WordOrientation orientation;
+
+		Location GetLocationAt(int i) const;
 	};
 
 	/**
@@ -46,6 +48,7 @@ namespace CrossWord
 		void SetLetter(int row, int col, unsigned char letter);
 		void SetLetter(const Location& location, unsigned char letter);
 		bool HasHole() const;
+		std::string GetWordAt(const WordLocation& wordLocation) const;
 
 		void GetAllWordLocations(std::vector<WordLocation>& wordLocationArray) const;
 		void GetAllLocationsWithLetter(std::vector<Location>& locationArray, unsigned char letter) const;

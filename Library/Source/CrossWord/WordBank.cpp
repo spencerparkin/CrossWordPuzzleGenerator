@@ -42,6 +42,7 @@ bool WordBank::Load(const std::string& filePath)
 		}
 
 		bucket->wordTree.AddWord(word);
+		bucket->wordArray.push_back(word);
 	}
 
 	fileStream.close();
@@ -51,4 +52,13 @@ bool WordBank::Load(const std::string& filePath)
 bool WordBank::IsWord(const std::string& word) const
 {
 	return this->wordTree.IsWord(word);
+}
+
+const std::vector<std::string>* WordBank::GetAllWordsOfLength(int length) const
+{
+	auto pair = this->bucketMap.find(length);
+	if (pair == this->bucketMap.end())
+		return nullptr;
+
+	return &pair->second->wordArray;
 }

@@ -27,3 +27,13 @@ int Random::InRange(int min, int max)
 	std::uniform_int_distribution<int> distribution(min, max);
 	return distribution(this->generator);
 }
+
+void Random::MakeRandomPermutation(std::vector<int>& permutation, int size)
+{
+	permutation.resize(size);
+
+	for (int i = 0; i < size; i++)
+		permutation[i] = i;
+
+	this->Shuffle(permutation.data(), (uint32_t)permutation.size());
+}
