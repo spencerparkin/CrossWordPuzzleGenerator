@@ -4,12 +4,6 @@
 #include <stdio.h>
 #include "CrossWord/PuzzleMatrix.h"
 
-#ifdef CROSSWORD_ENABLE_LOG
-#define CROSSWORD_LOG			printf
-#else
-#define CROSSWORD_LOG
-#endif
-
 namespace CrossWord
 {
 	class WordBank;

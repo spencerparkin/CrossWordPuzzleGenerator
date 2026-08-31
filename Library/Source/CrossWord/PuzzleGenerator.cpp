@@ -119,30 +119,18 @@ bool PuzzleGenerator::FitWords(PuzzleMatrix* puzzleMatrix, WordBank* wordBank, R
 			partialWordLocationArray.push_back(wordLocation);
 	}
 
-	CROSSWORD_LOG("%s", puzzleMatrix->Print().c_str());
-
-	// We have to make sure that every completed word is actually word.
+	// We have to make sure that every completed word is actually a word.
 	// This is because some words get completed as a result of trying
 	// to complete other words.
 	for (const WordLocation& wordLocation : completedWordLocationArray)
 	{
 		std::string word = puzzleMatrix->GetWordAt(wordLocation);
 		if (!wordBank->IsWord(word))
-		{
-			CROSSWORD_LOG("Detected non-word: %s\n", word.c_str());
 			return false;
-		}
 	}
-
-	CROSSWORD_LOG("Num completed words: %d\n", (int)completedWordLocationArray.size());
-	CROSSWORD_LOG("Num partial words: %d\n", (int)partialWordLocationArray.size());
-	CROSSWORD_LOG("Num empty words: %d\n", (int)emptyWordLocationArray.size());
 
 	if (completedWordLocationArray.size() == wordLocationArray.size())
-	{
-		CROSSWORD_LOG("Puzzle generation complete!\n");
 		return true;
-	}
 
 	// We want to try to fit partial words before empty ones, because if things
 	// aren't fitting, we need to know sooner rather than later.
@@ -154,16 +142,12 @@ bool PuzzleGenerator::FitWords(PuzzleMatrix* puzzleMatrix, WordBank* wordBank, R
 	else
 		return false;
 
-	CROSSWORD_LOG("Attempting to fit location: %d, %d, %s\n", wordLocation.location.row, wordLocation.location.col, (wordLocation.orientation == WordOrientation::ACROSS) ? "across" : "down");
-
 	const std::vector<std::string>* wordArray = wordBank->GetAllWordsOfLength(wordLocation.length);
 	if (!wordArray)
 	{
 		assert(false);
 		return false;
 	}
-
-	CROSSWORD_LOG("There are %d possible words of size %d.\n", (int)wordArray->size(), wordLocation.length);
 
 	std::vector<int> permutation;
 	random->MakeRandomPermutation(permutation, (int)wordArray->size());
@@ -193,19 +177,13 @@ bool PuzzleGenerator::FitWords(PuzzleMatrix* puzzleMatrix, WordBank* wordBank, R
 			}
 		}
 
-		if (wordLaidDown)
-		{
-			CROSSWORD_LOG("Successfully fit word \"%s\"!\n", word.c_str());
-
-			if (this->FitWords(puzzleMatrix, wordBank, random, wordLocationArray))
-				return true;
-		}
+		if (wordLaidDown && this->FitWords(puzzleMatrix, wordBank, random, wordLocationArray))
+			return true;
 
 		// Undo any changes we made to the matrix.
 		for (const Location& location : locationArray)
 			puzzleMatrix->SetLetter(location, CROSSWORD_LETTER_UNKNOWN);
 	}
 
-	CROSSWORD_LOG("Exhausted all word choices.  Returning failure.\n");
 	return false;
 }
