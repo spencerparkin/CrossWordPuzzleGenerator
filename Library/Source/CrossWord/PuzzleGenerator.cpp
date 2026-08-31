@@ -73,6 +73,9 @@ bool PuzzleGenerator::Generate(PuzzleMatrix* puzzleMatrix, WordBank* wordBank, R
 			if (keepChange && puzzleMatrix->HasHole())
 				keepChange = false;
 
+			// STPTODO: Might want to add a condition here that no word is in isolation.
+			//          That is, every word should have at least one other word overlapping it.
+
 			if (keepChange)
 			{
 				blankFound = true;
