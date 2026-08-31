@@ -41,7 +41,6 @@ bool WordBank::Load(const std::string& filePath)
 			this->bucketMap.insert(std::pair(wordLength, bucket));
 		}
 
-		bucket->wordTree.AddWord(word);
 		bucket->wordArray.push_back(word);
 	}
 

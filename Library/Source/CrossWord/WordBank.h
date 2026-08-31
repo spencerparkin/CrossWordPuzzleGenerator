@@ -27,7 +27,6 @@ namespace CrossWord
 	private:
 		struct Bucket
 		{
-			WordTree wordTree;
 			int wordLength;
 			std::vector<std::string> wordArray;
 		};
