@@ -100,6 +100,11 @@ const std::vector<std::string>* WordBank::GetAllWordsOfLengthWithProfile(int len
 
 //-------------------------------------- WordBank::WordProfile --------------------------------------
 
+void WordBank::WordProfile::Clear()
+{
+	this->tupleArray.clear();
+}
+
 void WordBank::WordProfile::AddCharacteristic(int i, unsigned char letter)
 {
 	this->tupleArray.push_back(std::tuple<int, unsigned char>(i, letter));

@@ -3,10 +3,12 @@
 #include <string>
 #include <stdio.h>
 #include "CrossWord/PuzzleMatrix.h"
+#include "CrossWord/WordBank.h"
+
+#define CROSSWORD_LOG_GENERATOR
 
 namespace CrossWord
 {
-	class WordBank;
 	class Random;
 
 	/**
@@ -33,6 +35,14 @@ namespace CrossWord
 
 	private:
 
+		struct Stamp
+		{
+			Location location;
+			int i;
+		};
+
 		bool FitWords(PuzzleMatrix* puzzleMatrix, WordBank* wordBank, Random* random, const std::vector<WordLocation>& wordLocationArray);
+
+		void GenerateWordProfile(PuzzleMatrix* puzzleMatrix, const WordLocation& wordLocation, WordBank::WordProfile& wordProfile, std::vector<Stamp>& stampArray);
 	};
 }

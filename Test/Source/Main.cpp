@@ -20,8 +20,7 @@ int main(int argc, char** argv)
 	CrossWord::PuzzleGenerator puzzleGenerator;
 	CrossWord::Random random;
 
-	random.SetSeed(4321);		// <-- STPTODO: This doesn't terminate in a reasonable amount of time.  How fix?
-	//random.SetSeed(123);
+	random.SetSeed(4321);
 
 	std::cout << "Generating puzzle...\n";
 

@@ -132,46 +132,55 @@ bool PuzzleGenerator::FitWords(PuzzleMatrix* puzzleMatrix, WordBank* wordBank, R
 	if (completedWordLocationArray.size() == wordLocationArray.size())
 		return true;
 
-	// We want to try to fit partial words before empty ones, because if things
-	// aren't fitting, we need to know sooner rather than later.
+#ifdef CROSSWORD_LOG_GENERATOR
+	printf("%s\n\n", puzzleMatrix->Print().c_str());
+#endif
+
 	WordLocation wordLocation;
-	if (partialWordLocationArray.size() > 0)
-		wordLocation = partialWordLocationArray[0];
-	else if (emptyWordLocationArray.size() > 0)
-		wordLocation = emptyWordLocationArray[0];
-	else
-		return false;
-
-	struct Stamp
-	{
-		Location location;
-		int i;
-	};
-
 	std::vector<Stamp> stampArray;
 	WordBank::WordProfile wordProfile;
 
-	for (int i = 0; i < wordLocation.length; i++)
+	// We want to try to fit partial words before empty ones, because if things
+	// aren't fitting, we need to know sooner rather than later.
+	if (partialWordLocationArray.size() > 0)
 	{
-		Stamp stamp;
-		stamp.i = i;
-		stamp.location = wordLocation.GetLocationAt(i);
-		unsigned char letter = puzzleMatrix->GetLetter(stamp.location);
-		if (letter != CROSSWORD_LETTER_UNKNOWN)
-			wordProfile.AddCharacteristic(i, letter);
-		else
-			stampArray.push_back(stamp);
-	}
+		// We want to choose the partial word location with the smallest associated set of possabilities.
+		// This is not just to reduce our branch factor, but also, if the smallest set has size zero,
+		// then we know that it doesn't make sense to follow the tree down any further at this point.
+		// We could try some other partial word that _does_ have possibilities, but if any current
+		// partial word has _no_ possibilities, then we'd be trying in vain.
+		int leastWordCount = std::numeric_limits<int>::max();
+		for (const WordLocation& partialWordLocation : partialWordLocationArray)
+		{
+			this->GenerateWordProfile(puzzleMatrix, partialWordLocation, wordProfile, stampArray);
+			const std::vector<std::string>* wordArray = wordBank->GetAllWordsOfLengthWithProfile(partialWordLocation.length, wordProfile);
+			if ((int)wordArray->size() < leastWordCount)
+			{
+				leastWordCount = (int)wordArray->size();
+				wordLocation = partialWordLocation;
+				if (leastWordCount == 0)
+					return false;
+			}
+		}
 
-	const std::vector<std::string>* wordArray = wordBank->GetAllWordsOfLengthWithProfile(wordLocation.length, wordProfile);
-	if (!wordArray)
+		assert(leastWordCount != std::numeric_limits<int>::max());
+	}
+	else if (emptyWordLocationArray.size() > 0)
+		wordLocation = emptyWordLocationArray[0];
+	else
 	{
 		assert(false);
 		return false;
 	}
 
-	if (wordArray->size() == 0)
-		return false;
+#ifdef CROSSWORD_LOG_GENERATOR
+	printf("Trying to determine (%d, %d) %s\n\n", wordLocation.location.row, wordLocation.location.col, (wordLocation.orientation == WordOrientation::ACROSS ? "across" : "down"));
+#endif
+
+	this->GenerateWordProfile(puzzleMatrix, wordLocation, wordProfile, stampArray);
+
+	const std::vector<std::string>* wordArray = wordBank->GetAllWordsOfLengthWithProfile(wordLocation.length, wordProfile);
+	assert(wordArray && wordArray->size() > 0);
 
 	std::vector<int> permutation;
 	random->MakeRandomPermutation(permutation, (int)wordArray->size());
@@ -191,4 +200,22 @@ bool PuzzleGenerator::FitWords(PuzzleMatrix* puzzleMatrix, WordBank* wordBank, R
 	}
 	
 	return false;
+}
+
+void PuzzleGenerator::GenerateWordProfile(PuzzleMatrix* puzzleMatrix, const WordLocation& wordLocation, WordBank::WordProfile& wordProfile, std::vector<Stamp>& stampArray)
+{
+	wordProfile.Clear();
+	stampArray.clear();
+
+	for (int i = 0; i < wordLocation.length; i++)
+	{
+		Stamp stamp;
+		stamp.i = i;
+		stamp.location = wordLocation.GetLocationAt(i);
+		unsigned char letter = puzzleMatrix->GetLetter(stamp.location);
+		if (letter != CROSSWORD_LETTER_UNKNOWN)
+			wordProfile.AddCharacteristic(i, letter);
+		else
+			stampArray.push_back(stamp);
+	}
 }

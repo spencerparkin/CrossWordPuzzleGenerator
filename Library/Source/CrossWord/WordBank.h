@@ -22,6 +22,7 @@ namespace CrossWord
 
 		struct WordProfile
 		{
+			void Clear();
 			void AddCharacteristic(int i, unsigned char letter);
 			void Sort();	// This only needs to be called if the characteristics were added in an unsorted order.
 			std::string GetKey() const;		// This assumes the tuples are already sorted!
