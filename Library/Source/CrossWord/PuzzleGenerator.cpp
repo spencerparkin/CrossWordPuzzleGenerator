@@ -142,48 +142,53 @@ bool PuzzleGenerator::FitWords(PuzzleMatrix* puzzleMatrix, WordBank* wordBank, R
 	else
 		return false;
 
-	const std::vector<std::string>* wordArray = wordBank->GetAllWordsOfLength(wordLocation.length);
+	struct Stamp
+	{
+		Location location;
+		int i;
+	};
+
+	std::vector<Stamp> stampArray;
+	WordBank::WordProfile wordProfile;
+
+	for (int i = 0; i < wordLocation.length; i++)
+	{
+		Stamp stamp;
+		stamp.i = i;
+		stamp.location = wordLocation.GetLocationAt(i);
+		unsigned char letter = puzzleMatrix->GetLetter(stamp.location);
+		if (letter != CROSSWORD_LETTER_UNKNOWN)
+			wordProfile.AddCharacteristic(i, letter);
+		else
+			stampArray.push_back(stamp);
+	}
+
+	const std::vector<std::string>* wordArray = wordBank->GetAllWordsOfLengthWithProfile(wordLocation.length, wordProfile);
 	if (!wordArray)
 	{
 		assert(false);
 		return false;
 	}
 
+	if (wordArray->size() == 0)
+		return false;
+
 	std::vector<int> permutation;
 	random->MakeRandomPermutation(permutation, (int)wordArray->size());
-
-	std::vector<Location> locationArray;
 
 	for (int i : permutation)
 	{
 		const std::string& word = (*wordArray)[i];
 
-		// Try to lay down the word.  Remember what we changed so we can possibly undo it later.
-		bool wordLaidDown = true;
-		locationArray.clear();
-		for (int j = 0; j < (int)word.length(); j++)
-		{
-			Location location = wordLocation.GetLocationAt(j);
-			unsigned char letter = puzzleMatrix->GetLetter(location);
-			if (letter == CROSSWORD_LETTER_UNKNOWN)
-			{
-				puzzleMatrix->SetLetter(location, word[j]);
-				locationArray.push_back(location);
-			}
-			else if (letter != word[j])
-			{
-				wordLaidDown = false;
-				break;
-			}
-		}
+		for (const Stamp& stamp : stampArray)
+			puzzleMatrix->SetLetter(stamp.location, word[stamp.i]);
 
-		if (wordLaidDown && this->FitWords(puzzleMatrix, wordBank, random, wordLocationArray))
+		if (this->FitWords(puzzleMatrix, wordBank, random, wordLocationArray))
 			return true;
 
-		// Undo any changes we made to the matrix.
-		for (const Location& location : locationArray)
-			puzzleMatrix->SetLetter(location, CROSSWORD_LETTER_UNKNOWN);
+		for (const Stamp& stamp : stampArray)
+			puzzleMatrix->SetLetter(stamp.location, CROSSWORD_LETTER_UNKNOWN);
 	}
-
+	
 	return false;
 }

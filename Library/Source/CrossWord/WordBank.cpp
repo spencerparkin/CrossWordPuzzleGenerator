@@ -1,7 +1,11 @@
 #include "CrossWord/WordBank.h"
 #include <fstream>
+#include <algorithm>
+#include <format>
 
 using namespace CrossWord;
+
+//-------------------------------------- WordBank --------------------------------------
 
 WordBank::WordBank()
 {
@@ -37,7 +41,6 @@ bool WordBank::Load(const std::string& filePath)
 		else
 		{
 			bucket = std::make_shared<Bucket>();
-			bucket->wordLength = wordLength;
 			this->bucketMap.insert(std::pair(wordLength, bucket));
 		}
 
@@ -60,4 +63,81 @@ const std::vector<std::string>* WordBank::GetAllWordsOfLength(int length) const
 		return nullptr;
 
 	return &pair->second->wordArray;
+}
+
+const std::vector<std::string>* WordBank::GetAllWordsOfLengthWithProfile(int length, const WordProfile& profile) const
+{
+	auto pairA = this->bucketMap.find(length);
+	if (pairA == this->bucketMap.end())
+		return nullptr;
+
+	const std::vector<std::string>* wordArray = nullptr;
+
+	if (profile.tupleArray.size() == 0)
+		wordArray = &pairA->second->wordArray;
+	else
+	{
+		std::string key = profile.GetKey();
+
+		auto pairB = pairA->second->collectionMap.find(key);
+		if (pairB != pairA->second->collectionMap.end())
+			wordArray = &pairB->second->wordArray;
+		else
+		{
+			auto collection = std::make_shared<Collection>();
+
+			for (const std::string& word : pairA->second->wordArray)
+				if (profile.WordMatchesProfile(word))
+					collection->wordArray.push_back(word);
+
+			wordArray = &collection->wordArray;
+			pairA->second->collectionMap.insert(std::pair(key, collection));
+		}
+	}
+
+	return wordArray;
+}
+
+//-------------------------------------- WordBank::WordProfile --------------------------------------
+
+void WordBank::WordProfile::AddCharacteristic(int i, unsigned char letter)
+{
+	this->tupleArray.push_back(std::tuple<int, unsigned char>(i, letter));
+}
+
+void WordBank::WordProfile::Sort()
+{
+	std::sort(this->tupleArray.begin(), this->tupleArray.end(), [](const std::tuple<int, unsigned char>& tupleA, const std::tuple<int, unsigned char>& tupleB) -> bool
+		{
+			return std::get<0>(tupleA) < std::get<0>(tupleB);
+		});
+}
+
+std::string WordBank::WordProfile::GetKey() const
+{
+	std::string key;
+
+	for (const std::tuple<int, unsigned char>& tuple : this->tupleArray)
+		key += std::format("{}{}", std::get<0>(tuple), (char)std::get<1>(tuple));
+
+	return key;
+}
+
+bool WordBank::WordProfile::WordMatchesProfile(const std::string& word) const
+{
+	int length = (int)word.length();
+
+	for (const std::tuple<int, unsigned char>& tuple : this->tupleArray)
+	{
+		int i = std::get<0>(tuple);
+		unsigned char letter = std::get<1>(tuple);
+		
+		if (i < 0 || i >= length)
+			return false;
+
+		if (word[i] != letter)
+			return false;
+	}
+
+	return true;
 }
