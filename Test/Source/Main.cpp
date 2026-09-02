@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 	CrossWord::PuzzleGenerator puzzleGenerator;
 	CrossWord::Random random;
 
-	random.SetSeed(4321);
+	random.SetSeed(2233);
 
 	std::cout << "Generating puzzle...\n";
 

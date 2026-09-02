@@ -5,7 +5,7 @@
 #include "CrossWord/PuzzleMatrix.h"
 #include "CrossWord/WordBank.h"
 
-#define CROSSWORD_LOG_GENERATOR
+//#define CROSSWORD_LOG_GENERATOR
 
 namespace CrossWord
 {
