@@ -37,6 +37,24 @@ void PuzzleMatrix::SetSize(int numRows, int numCols)
 	}
 }
 
+void PuzzleMatrix::Copy(const PuzzleMatrix& puzzleMatrix, bool copyLetters)
+{
+	this->SetSize(puzzleMatrix.numRows, puzzleMatrix.numCols);
+
+	for (int row = 0; row < this->numRows; row++)
+	{
+		for (int col = 0; col < this->numCols; col++)
+		{
+			unsigned char letter = puzzleMatrix.matrix[row][col];
+
+			if (letter != CROSSWORD_ALWAYS_BLANK)
+				this->matrix[row][col] = copyLetters ? letter : CROSSWORD_LETTER_UNKNOWN;
+			else
+				this->matrix[row][col] = CROSSWORD_ALWAYS_BLANK;
+		}
+	}
+}
+
 int PuzzleMatrix::GetNumRows() const
 {
 	return this->numRows;

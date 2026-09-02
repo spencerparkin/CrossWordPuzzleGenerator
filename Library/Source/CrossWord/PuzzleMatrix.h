@@ -49,6 +49,7 @@ namespace CrossWord
 		void SetLetter(const Location& location, unsigned char letter);
 		bool HasHole() const;
 		std::string GetWordAt(const WordLocation& wordLocation) const;
+		void Copy(const PuzzleMatrix& puzzleMatrix, bool copyLetters);
 
 		void GetAllWordLocations(std::vector<WordLocation>& wordLocationArray) const;
 		void GetAllLocationsWithLetter(std::vector<Location>& locationArray, unsigned char letter) const;

@@ -9,6 +9,7 @@ using namespace CrossWord;
 
 WordBank::WordBank()
 {
+	this->numWords = 0;
 }
 
 /*virtual*/ WordBank::~WordBank()
@@ -19,18 +20,28 @@ void WordBank::Clear()
 {
 	this->wordTree.Clear();
 	this->bucketMap.clear();
+	this->numWords = 0;
 }
 
-bool WordBank::Load(const std::string& filePath)
+int WordBank::GetNumWords() const
+{
+	return this->numWords;
+}
+
+bool WordBank::Load(const std::string& filePath, std::function<bool(double)> progressCallback)
 {
 	std::ifstream fileStream;
-	fileStream.open(filePath, std::ios::in);
+	fileStream.open(filePath, std::ios::in | std::ios::ate);
 	if (!fileStream.is_open())
 		return false;
+
+	std::streamsize numTotalBytes = fileStream.tellg();
+	fileStream.seekg(0, std::ios::beg);
 
 	std::string word;
 	while (std::getline(fileStream, word))
 	{
+		this->numWords++;
 		this->wordTree.AddWord(word);
 
 		int wordLength = (int)word.length();
@@ -45,6 +56,14 @@ bool WordBank::Load(const std::string& filePath)
 		}
 
 		bucket->wordArray.push_back(word);
+		
+		if (progressCallback)
+		{
+			std::streamsize numBytesRead = fileStream.tellg();
+			double progress = double(numBytesRead) / double(numTotalBytes);
+			if (progressCallback(progress))
+				return false;
+		}
 	}
 
 	fileStream.close();

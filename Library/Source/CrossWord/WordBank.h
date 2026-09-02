@@ -32,7 +32,8 @@ namespace CrossWord
 		};
 
 		void Clear();
-		bool Load(const std::string& filePath);
+		int GetNumWords() const;
+		bool Load(const std::string& filePath, std::function<bool(double)> progressCallback);
 		bool IsWord(const std::string& word) const;
 		const std::vector<std::string>* GetAllWordsOfLength(int length) const;
 		const std::vector<std::string>* GetAllWordsOfLengthWithProfile(int length, const WordProfile& profile) const;
@@ -51,7 +52,7 @@ namespace CrossWord
 		};
 
 		WordTree wordTree;
-
+		int numWords;
 		std::unordered_map<int, std::shared_ptr<Bucket>> bucketMap;
 	};
 }
