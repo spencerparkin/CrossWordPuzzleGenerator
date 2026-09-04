@@ -247,3 +247,17 @@ Location WordLocation::GetLocationAt(int i) const
 
 	return letterLocation;
 }
+
+bool WordLocation::operator==(const WordLocation& wordLocation) const
+{
+	if (this->location.row != wordLocation.location.row || this->location.col != wordLocation.location.col)
+		return false;
+
+	if (this->length != wordLocation.length)
+		return false;
+
+	if (this->orientation != wordLocation.orientation)
+		return false;
+
+	return true;
+}

@@ -25,6 +25,7 @@ namespace CrossWord
 		int length;
 		WordOrientation orientation;
 
+		bool operator==(const WordLocation& wordLocation) const;
 		Location GetLocationAt(int i) const;
 	};
 
